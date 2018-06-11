@@ -1,20 +1,39 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Pet from './Pet';
 import NewPetForm from './NewPetForm';
+import axios from 'axios';
 
 class PetCollection extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      petList: props.petList,
+      pets: [],
     }
   }
   // we need state instead of props because props cannot be changed withing the component!
 
+
+componentDidMount = () => {
+  console.log('Component did mount was called');
+
+  // axios.get('').then().catch();
+  axios.get('https://petdibs.herokuapp.com/pets')
+    .then( (response) => {
+      console.log(response); //to see how the data looks like and decide what we want.
+      this.setState({
+        pets: response.data
+      });
+    })
+    .catch( (error) => {
+      this.setState({
+        error: error.message
+      })
+    });
+}
+
   renderPetList = () => {
-      const componentList = this.props.petList.map((pet, index) => {
+      const componentList = this.state.pets.map((pet, index) => {
         return (
           <Pet
            key={index}
@@ -29,7 +48,7 @@ class PetCollection extends Component {
     }
 
     addPet = (pet) => {
-      const petList = this.state.petList;
+      const petList = this.state.pets;
 
       petList.push(pet);
       this.setState({
@@ -40,6 +59,7 @@ class PetCollection extends Component {
   render() {
     return (
       <section>
+      <p>{this.state.error}</p>
       {this.renderPetList()}
       <NewPetForm addPetCallback={this.addPet}/>
       </section>
@@ -47,9 +67,5 @@ class PetCollection extends Component {
   }
 }
 
-
-PetCollection.propTypes = {
-  petList: PropTypes.array.isRequired,
-}
 
 export default PetCollection;
