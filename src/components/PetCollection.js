@@ -5,6 +5,51 @@ import NewPetForm from './NewPetForm';
 
 class PetCollection extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      petList: props.petList,
+    }
+  }
+  // we need state instead of props because props cannot be changed withing the component!
+
+  renderPetList = () => {
+      const componentList = this.props.petList.map((pet, index) => {
+        return (
+          <Pet
+           key={index}
+           name={pet.name}
+           age={pet.age}
+           breed={pet.breed}
+           about={pet.about}
+          />
+        );
+      });
+      return componentList;
+    }
+
+    addPet = (pet) => {
+      const petList = this.state.petList;
+
+      petList.push(pet);
+      this.setState({
+        petList,
+      });
+    }
+
+  render() {
+    return (
+      <section>
+      {this.renderPetList()}
+      <NewPetForm addPetCallback={this.addPet}/>
+      </section>
+    )
+  }
+}
+
+
+PetCollection.propTypes = {
+  petList: PropTypes.array.isRequired,
 }
 
 export default PetCollection;
